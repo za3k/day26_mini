@@ -1,8 +1,8 @@
 /* -- This specific Hack-A-Day project -- */
 
 .minigame {
-    height: 100px;
-    width: 100px;
+    height: 150px;
+    width: 150px;
     border: 1px solid black;
     margin: 10px;
     display: inline-block;

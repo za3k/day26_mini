@@ -124,7 +124,7 @@ class Game {
         const height = $(div).height(), width = $(div).width();
         div = d3.select(div)
 
-        const size = 5;
+        const size = 10;
         const gap = 1;
         let bits = [];
         for (let i=0; i<state.snake.length; i++) { // Head to tail
@@ -140,8 +140,8 @@ class Game {
         const gameHeight = size*state.boardSize[1]+gap*(state.boardSize[1]-1);
 
         const margin = {
-            top: 10,
-            bottom: (height-gameHeight-10),
+            top: 20,
+            bottom: (height-gameHeight-20),
             left: (width-gameWidth)/2,
             right: (width-gameWidth)/2,
         }
@@ -170,8 +170,8 @@ class Game {
             .text("snek")
         );
         makeUpdate(div.selectAll(".score").data([null]), "text", (d) => d.attr("class", "score")
-            .attr("x", width - 10)
-            .attr("y", margin.top+gameHeight+margin.bottom/2)
+            .attr("x", width - 20)
+            .attr("y", margin.top+gameHeight+margin.bottom/2+2)
             .attr("font", "monospace")
             .attr("width", width)
             .attr("text-anchor", "end")
@@ -179,8 +179,8 @@ class Game {
             .text(state.score)
         );
         makeUpdate(div.selectAll(".life").data([state.snakeAlive]), "text", d => d.attr("class", "life")
-            .attr("x", 10)
-            .attr("y", margin.top+gameHeight+margin.bottom/2)
+            .attr("x", 20)
+            .attr("y", margin.top+gameHeight+margin.bottom/2+2)
             .attr("font", "monospace")
             .attr("width", width)
             .attr("text-anchor", "start")
