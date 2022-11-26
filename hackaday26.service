@@ -1,0 +1,11 @@
+[Unit]
+Description=gunicorn3 for hackaday-26-mini
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/hackaday/day26_mini
+ExecStart=/bin/gunicorn3 -e SCRIPT_NAME=/hackaday/mini --bind 0.0.0.0:8026 app:app
+
+[Install]
+WantedBy=multi-user.target
