@@ -6,7 +6,7 @@ class Rng {
     }
     flip(p) {
         p ||= 0.5;
-        return this.Random() > p;
+        return this.Random() < p;
     }
     randInt(min, max) { // inclusive
         return Math.floor(this.randFloat(min, max+1));
@@ -30,9 +30,9 @@ class Game {
     static startState = {
         boardSize: [10,10],
         fruits: [[8, 8]],
-        fruitColors: [Game.fruitColor(new Rng())],
+        fruitColors: ["rgb(255,0,0)"],
         snake: [[5, 5]], // From tail to head
-        snakeColors: [Game.snakeColor(new Rng())], // From head to tail
+        snakeColors: ["rgb(50,200,50)"], // From head to tail
         snakeDir: [1, 0],
         snakeAlive: true,
         score: 0
@@ -41,12 +41,10 @@ class Game {
         return !game.snakeAlive;
     }
     static snakeColor(rng) {
-        const v=rng.randFloat(0, 1);
-        return `rgb(${v*255}, 255, ${v*255})`
+        return `rgb(${rng.randFloat(0,150)}, ${rng.randFloat(150,255)}, ${rng.randFloat(0,150)})`
     }
     static fruitColor(rng) {
-        const v=rng.randFloat(0, 1);
-        return `rgb(255, ${v*255}, ${v*255})`
+        return `rgb(${rng.randFloat(100,255)}, ${rng.randFloat(0,100)}, ${rng.randFloat(0,100)})`
     }
     static clone(state) {
         return JSON.parse(JSON.stringify(state))
@@ -66,10 +64,18 @@ class Game {
         const isFruit = tile => is(s.fruits, tile)
         const findFruit = tile => find(s.fruits, tile)
         const inBounds = tile => newTile[0] >= 0 && newTile[0] < s.boardSize[0] && newTile[1] >= 0 && newTile[1] < s.boardSize[1];
-        const randomTile = () => [rng.randInt(0, s.boardSize[0]), rng.randInt(0, s.boardSize[1])];
+        const randomTile = () => [rng.randInt(0, s.boardSize[0]-1), rng.randInt(0, s.boardSize[1]-1)];
         const oppositeDir = (d1, d2) => d1[0]==-d2[0] && d1[1]==-d2[1];
         const snakeHead = s.snake[s.snake.length-1];
         const move = (t, d) => [t[0]+d[0], t[1]+d[1]];
+        function addFruit() {
+            let tile;
+            do {
+                tile = randomTile()
+            } while (isSnake(tile) || isFruit(tile));
+            s.fruits.push(tile);
+            s.fruitColors.push(Game.fruitColor(rng));
+        }
 
         // Randomize fruit colors every tick
         for (let i=0; i<s.fruits.length; i++) s.fruitColors[i] = Game.fruitColor(rng);
@@ -102,16 +108,13 @@ class Game {
             s.snakeColors.push(Game.snakeColor(rng));
             
             // Add new random fruit
-            let tile;
-            do {
-                tile = randomTile()
-            } while (isSnake(tile) || isFruit(tile));
-            s.fruits.push(tile);
-            s.fruitColors.push(Game.fruitColor(rng));
+            addFruit();
         } else {
             s.snake.shift();
             s.snake.push(newTile);
         }
+
+        if (rng.flip(0.01)) addFruit(); // Sometimes add a new fruit at random
 
 
         return s;
@@ -186,10 +189,10 @@ class Game {
             .text(v => v ? "ALIVE" : "DEAD")
         );
         div.selectAll(".border").data([null]).enter().append("rect").attr("class", "border")
-            .attr("x", margin.left)
-            .attr("y", margin.top)
-            .attr("height", height-margin.bottom-margin.top)
-            .attr("width", width-margin.left-margin.right)
+            .attr("x", margin.left-1)
+            .attr("y", margin.top-1)
+            .attr("height", height-margin.bottom-margin.top+2)
+            .attr("width", width-margin.left-margin.right+2)
             .attr("stroke-width", 2)
             .attr("stroke", "black")
             .style("fill", "none");
